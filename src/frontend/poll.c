@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
-char* users[] = {"Yao", "Yang", "Xiao", "Paley"};
-char tit[] = "Q: A I 1 2 3 4 5 6 7 8 C";
+const char* users[] = {"Yao", "Yang", "Xiao", "Paley"};
+const char tit[] = "Q: A I 1 2 3 4 5 6 7 8 C";
 
 int validate_user(char* inp) {
     int i;
@@ -13,7 +14,11 @@ int validate_user(char* inp) {
 }
 
 int main(){
+    setlocale(LC_ALL, "");
     char un[20];
+    int mv;
+    int rng;
+    char etc[100];
     int ans[10] ={0};
     FILE* temp = fopen("temp", "a");
     char query_buf[1000];
@@ -54,7 +59,11 @@ int main(){
     mvprintw(my - 1, mx - 21, "%-11s %-6s", "esc", "quit");
     mvprintw(0, mx - 28, "%s", tit);
     mvprintw(1, mx - 28, "%s", "A: ");
+    mvaddwstr(3, mx - 28, L"P:￥");
+    mvprintw(4, mx - 28, "R:%25s", "KM");
     int nt = 0;
+    int yen = 0;
+    int range = 0;
     do {
         switch (flag) {
         case 3:
@@ -68,17 +77,24 @@ int main(){
                      "                         ");
             sprintf(query_buf, "INSERT INTO Ans VALUES(\"%s\", default",
                     un);
-            char temp_buf[10];
+            char temp_buf[50];
             for (int i = 0; i < 10; sprintf(temp_buf, ", %d", ans[i++]),
                                     strcat(query_buf, temp_buf));
-            sprintf(temp_buf, ", %d);", nt);
+            sprintf(temp_buf, ", %d, %d, %d, \"", nt, yen, range);
             strcat(query_buf, temp_buf);
+            strcat(query_buf, etc);
+            strcat(query_buf, "\");");
             fprintf(temp, "%s\n", query_buf);
             for (int i= 0; i < 10; ans[i++] = 0);
             mvprintw(1, mx - 25, "%25c", ' ');
+            mvprintw(3, mx - 24, "%20c", ' ');
+            mvprintw(4, mx - 24, "%20c", ' ');
             pos = mx - 25;
             flag = 1;
             nt = 0;
+            yen = 0;
+            range = 0;
+            *etc = 0;
         }
         mvprintw(2, pos, "%c", '^');
         mvprintw(my >> 1, (mx - 11) >> 1, "Question %2d\n", n + 1);
@@ -97,24 +113,26 @@ int main(){
         case '9':
             switch (n) {
             case 1:
-                if (c == '2') {
+                if (c == '1') {
                     mvprintw((my >> 1) + 2, (mx - 12) >> 1, "%s", "Country Code");
                     echo();
+                    curs_set(1);
                     do {
                         char buf[10];
                         mvscanw((my >> 1) + 3, (mx - 2) >> 1, "%s", buf);
                         nt = atoi(buf);
-                        if (!nt || nt > 84) {
+                        if (!nt || nt > 88) {
                             beep();
                             mvprintw((my >> 1) + 3, (mx - 2) >> 1, "%10c", ' ');
                         }
-                    } while (!nt || nt > 84);
+                    } while (!nt || nt > 88);
+                    curs_set(0);
                     noecho();
                     mvprintw((my >> 1) + 2, (mx - 12) >> 1, "%12c", ' ');
                     mvprintw((my >> 1) + 3, (mx - 2) >> 1, "%10c", ' ');
                     mvprintw(1, mx - 5, "%d", nt);
-                    break; 
-                } else if (c == '1') {
+                    break;
+                } else if (c == '2') {
                     mvprintw(1, mx - 5, "%s", "  ");
                     break;
                 }
@@ -122,15 +140,81 @@ int main(){
             case 5:
             case 7:
             case 8:
-            case 9:
                 if (c > '2') {
                     valid = 0;
                 }
                 break;
             case 0:
+                if (c > '6') {
+                    valid = 0;
+                }
+                break;
+            case 9:
+                switch (c) {
+                case '1':
+                    mvprintw(4, mx - 24, "%20c", ' ');
+                    mvprintw((my >> 1) + 2, (mx - 10) >> 1, "%s", "Yen Amount");
+                    echo();
+                    curs_set(1);
+                    do {
+                        char buf[20];
+                        mvscanw((my >> 1) + 3, (mx - 20) >> 1, "%s", buf);
+                        yen = atoi(buf);
+                        if (yen <= 0) {
+                            beep();
+                            mvprintw((my >> 1) + 3, (mx - 20) >> 1, "%20c", ' ');
+                        }
+                    } while (yen <= 0);
+                    curs_set(0);
+                    noecho();
+                    mvprintw(3, mx - 24, "%'20d", yen);
+                    mvprintw((my >> 1) + 2, (mx - 10) >> 1, "%10c", ' ');
+                    mvprintw((my >> 1) + 3, (mx - 20) >> 1, "%20c", ' ');
+                    break;
+                case '2':
+                    mvprintw(3, mx - 24, "%20c", ' ');
+                    mvprintw(4, mx - 24, "%20c", ' ');
+                    break;
+                case '3':
+                    mvprintw(3, mx - 24, "%20c", ' ');
+                    mvprintw((my >> 1) + 2, (mx - 8) >> 1, "%s", "KM Range");
+                    echo();
+                    curs_set(1);
+                    do {
+                        char buf[20];
+                        mvscanw((my >> 1) + 3, (mx - 20) >> 1, "%s", buf);
+                        range = atoi(buf);
+                        if (range <= 0) {
+                            beep();
+                            mvprintw((my >> 1) + 3, (mx - 20) >> 1, "%20c", ' ');
+                        }
+                    } while (range <= 0);
+                    curs_set(0);
+                    noecho();
+                    mvprintw(4, mx - 24, "%'20d", range);
+                    mvprintw((my >> 1) + 2, (mx - 8) >> 1, "%8c", ' ');
+                    mvprintw((my >> 1) + 3, (mx - 20) >> 1, "%20c", ' ');
+                    break;
+                case '4':
+                    mvprintw((my >> 1) + 2, (mx - 3) >> 1, "%s", "ETC");
+                    mvprintw(3, mx - 24, "%20c", ' ');
+                    mvprintw(4, mx - 24, "%20c", ' ');
+                    echo();
+                    curs_set(1);
+                    mvscanw((my >> 1) + 3, 5, "%s", etc);
+                    curs_set(0);
+                    noecho();
+                    mvprintw((my >> 1) + 2, (mx - 3) >> 1, "%3c", ' ');
+                    mvaddwstr((my >> 1) + 3, 5, L"                                                                           ");;
+                    break;
+                }
             case 2:
-            case 4:
                 if (c > '4') {
+                    valid = 0;
+                }
+                break;
+            case 4:
+                if (c > '8') {
                     valid = 0;
                 }
                 break;
