@@ -1,2 +1,0 @@
-INSERT INTO Ans VALUES("Yao", default, 1, 2, 1, 1, 1, 1, 1, 1, 1, 3, 0, 100, 1000);
-INSERT INTO Ans VALUES("Yao", default, 1, 2, 1, 1, 1, 1, 1, 1, 1, 4, 0, 0, 0, "政府の補助金");

@@ -6,10 +6,10 @@ MYSQL* conn;
 int initialize_conn(void) {
     conn = mysql_init(NULL);
     return mysql_real_connect(conn,
-                              "192.168.2.102",
+                              "localhost",
                               "datainput",
                               "guchianone",
-                              "japantoday",
+                              "JapanToday",
                               0, NULL, 0) != NULL;
 }
 

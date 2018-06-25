@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include "../backend/backend.h"
 
 const char* users[] = {"Yao", "Yang", "Xiao", "Paley"};
 const char tit[] = "Q: A I 1 2 3 4 5 6 7 8 C";
@@ -18,9 +19,10 @@ int main(){
     char un[20];
     int mv;
     int rng;
-    char etc[100];
+    char etc[100] = {0};
     int ans[10] ={0};
     FILE* temp = fopen("temp", "a");
+    initialize_conn();
     char query_buf[1000];
     WINDOW* w = initscr();
     int my, mx;
@@ -85,6 +87,7 @@ int main(){
             strcat(query_buf, etc);
             strcat(query_buf, "\");");
             fprintf(temp, "%s\n", query_buf);
+            execute(query_buf);
             for (int i= 0; i < 10; ans[i++] = 0);
             mvprintw(1, mx - 25, "%25c", ' ');
             mvprintw(3, mx - 24, "%20c", ' ');
@@ -94,7 +97,7 @@ int main(){
             nt = 0;
             yen = 0;
             range = 0;
-            *etc = 0;
+            memset(etc, 0, 100);
         }
         mvprintw(2, pos, "%c", '^');
         mvprintw(my >> 1, (mx - 11) >> 1, "Question %2d\n", n + 1);
@@ -274,6 +277,7 @@ int main(){
         mvprintw(0, 0, "key pressed %3d", c);
     } while (flag);
     fclose(temp);
+    close_conn();
     clear();
     mvprintw(my >> 1, ((mx - 25) >> 1), "%s", "Press any key to continue");
     getch();

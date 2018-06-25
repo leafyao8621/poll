@@ -1,0 +1,2 @@
+#!/bin/bash
+gcc -o test src/backend/*.c `ncursesw5-config --cflags --libs` `mysql_config --cflags --libs`

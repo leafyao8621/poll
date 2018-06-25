@@ -1,0 +1,25 @@
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Ans;
+
+CREATE TABLE Users(
+    UserName VARCHAR(100) PRIMARY KEY
+);
+
+CREATE TABLE Ans (
+    UserName VARCHAR(100) REFERENCES Users(UserName),
+    ID integer PRIMARY KEY AUTO_INCREMENT,
+    Age integer,
+    IsInternational integer,
+    NumInPossesion integer,
+    WillPurchase integer,
+    Percentage integer,
+    IsValuable integer,
+    Price integer,
+    WillIncrease integer,
+    Supplement integer,
+    ExternalFactor integer,
+    CountryCode integer,
+    DecreaseAmount integer,
+    Distance integer,
+    ETC VARCHAR(100)
+);

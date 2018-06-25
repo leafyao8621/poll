@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -o poll src/frontend/poll.c $(ncursesw5-config --cflags) $(ncursesw5-config --libs)
+gcc -o poll src/frontend/poll.c src/backend/backend.c `ncursesw5-config --cflags --libs` `mysql_config --cflags --libs`
